@@ -23,6 +23,8 @@ const seed = async () => {
       email,
       password: hashed,
       role: "doctor",
+      phone:"+1234567890",
+      gender: "male"
     });
 
     console.log("Seeded doctor:", doctor.email);
