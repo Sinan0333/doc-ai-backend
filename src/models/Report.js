@@ -32,6 +32,23 @@ const reportSchema = new mongoose.Schema({
     analyzedData: {
         type: mongoose.Schema.Types.Mixed, // The JSON object returned by OpenAI
         required: true
+    },
+    doctorReview: {
+        status: {
+            type: String,
+            enum: ['pending', 'requested', 'reviewed'],
+            default: 'pending'
+        },
+        doctorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        reviewedDate: {
+            type: Date
+        },
+        notes: {
+            type: String
+        }
     }
 }, { timestamps: true });
 

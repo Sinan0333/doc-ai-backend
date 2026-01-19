@@ -92,3 +92,60 @@ exports.getReportHistory = async (req, res) => {
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 };
+
+exports.getReportById = async (req, res) => {
+    try {
+        const report = await Report.findOne({ _id: req.params.id, patientId: req.user.id })
+            .select('+extractedText') // Include if needed, or remove if not needed for view
+            .populate('doctorReview.doctorId', 'fullName email specialist');
+
+        if (!report) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+        res.json({ data: report });
+    } catch (error) {
+        console.error("Get Report Error:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+exports.downloadReport = async (req, res) => {
+    try {
+        const report = await Report.findOne({ _id: req.params.id, patientId: req.user.id });
+
+        if (!report) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+        res.download(report.filePath, report.reportName + '.pdf');
+    } catch (error) {
+        console.error("Download Error:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+exports.requestReview = async (req, res) => {
+    try {
+        const { doctorId } = req.body;
+        const report = await Report.findOne({ _id: req.params.id, patientId: req.user.id });
+
+        if (!report) {
+            return res.status(404).json({ message: "Report not found" });
+        }
+
+        report.doctorReview = {
+            status: 'requested',
+            doctorId: doctorId,
+            reviewedDate: null,
+            notes: null
+        };
+
+        await report.save();
+
+        res.json({ message: "Review requested successfully", data: report });
+    } catch (error) {
+        console.error("Request Review Error:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};

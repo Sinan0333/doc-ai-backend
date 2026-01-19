@@ -1,3 +1,5 @@
+const User = require('../models/User');
+
 // Patient protected routes - placeholder data for MVP
 exports.getPatientDashboard = async (req, res, next) => {
   try {
@@ -22,4 +24,13 @@ exports.getPatientDashboard = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.getDoctorsList = async (req, res, next) => {
+    try {
+        const doctors = await User.find({ role: 'doctor' }).select('fullName email specialist');
+        res.json({ success: true, count: doctors.length, data: doctors });
+    } catch (err) {
+        next(err);
+    }
 };
