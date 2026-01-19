@@ -33,6 +33,17 @@ const deleteFile = (filePath) => {
     }
 };
 
+async function listModels() {
+  try {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${genAI.apiKey}`);
+    const data = await response.json();
+    console.log("Available Models:");
+    data.models.forEach(m => console.log("- " + m.name));
+  } catch (err) {
+    console.error("Error fetching models:", err);
+  }
+}
+
 const getPrompt = (rawText) => `
     You are an AI medical assistant. Extract key relevant health parameters from the following medical report text.
     Return ONLY a valid JSON object. Do not include markdown formatting like \`\`\`json.
@@ -78,7 +89,7 @@ const parseMedicalDataGemini = async (rawText) => {
     const prompt = getPrompt(rawText);
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
@@ -95,10 +106,12 @@ const parseMedicalData = async (rawText) => {
     // Fallback logic or just direct call
     // Currently preferring Gemini
     try {
+        listModels();
         return await parseMedicalDataGemini(rawText);
     } catch (error) {
         console.log("Gemini failed, trying OpenAI fallback...");
-        return await parseMedicalDataOpenAI(rawText);
+        // return await parseMedicalDataOpenAI(rawText);
+        throw error;
     }
 };
 

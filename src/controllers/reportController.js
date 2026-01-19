@@ -46,3 +46,49 @@ exports.uploadReport = async (req, res) => {
         res.status(500).json({ message: "Server Error during processing", error: error.message });
     }
 };
+exports.getReportHistory = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const { reportType, startDate, endDate, search } = req.query;
+
+        const query = { patientId: req.user.id };
+
+        if (reportType && reportType !== 'all') {
+            query.reportType = reportType;
+        }
+
+        if (startDate || endDate) {
+            query.reportDate = {};
+            if (startDate) query.reportDate.$gte = new Date(startDate);
+            if (endDate) query.reportDate.$lte = new Date(endDate);
+        }
+
+        if (search) {
+            query.reportName = { $regex: search, $options: 'i' };
+        }
+
+        const reports = await Report.find(query)
+            .sort({ reportDate: -1 })
+            .skip(skip)
+            .limit(limit)
+            .select('-extractedText -analyzedData'); // Exclude heavy fields for list view
+
+        const total = await Report.countDocuments(query);
+
+        res.json({
+            data: reports,
+            pagination: {
+                page,
+                limit,
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        console.error("Get History Error:", error);
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
