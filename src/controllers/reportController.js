@@ -17,13 +17,18 @@ exports.uploadReport = async (req, res) => {
         // 2. Analyze with OpenAI
         const analyzedData = await parseMedicalData(rawText);
 
-        // 3. Save to DB (Optional: verify if Patient ID exists in request)
-        // For now, we just return the analysis to frontend
-        
-        // Clean up uploaded file? Or keep it? 
-        // Strategy: Keep original file reference, but maybe delete local temp copy if using cloud. 
-        // Since we are local, we keep it in 'uploads/' but for this specific flow we might want to just parse.
-        // Let's decide to KEEP the file for record.
+        // 3. Save to DB
+        const newReport = new Report({
+            patientId: req.user.id, // Auth middleware adds user object to req
+            reportName,
+            reportType,
+            reportDate,
+            filePath,
+            extractedText: rawText,
+            analyzedData
+        });
+
+        await newReport.save();
 
         res.json({
             message: "Report analyzed successfully",
