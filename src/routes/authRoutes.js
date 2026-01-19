@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerPatient, loginPatient, loginDoctor, getCurrentUser } = require('../controllers/authController');
+const { registerPatient, loginPatient, loginDoctor, getCurrentUser, updateProfile, changePassword } = require('../controllers/authController');
 const { registerPatientValidator, loginValidator } = require('../validators/authValidators');
 const { handleValidationErrors } = require('../middleware/errorMiddleware');
 const authMiddleware = require('../middleware/authMiddleware');
@@ -16,6 +16,13 @@ router.post('/patient-login', loginValidator, handleValidationErrors, loginPatie
 router.post('/doctor-login', loginValidator, handleValidationErrors, loginDoctor);
 
 // GET /api/auth/me - Get current user
+// GET /api/auth/me - Get current user
 router.get('/me', authMiddleware, getCurrentUser);
+
+// PUT /api/auth/profile - Update profile
+router.put('/profile', authMiddleware, updateProfile);
+
+// PUT /api/auth/change-password - Change password
+router.put('/change-password', authMiddleware, changePassword);
 
 module.exports = router;

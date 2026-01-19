@@ -122,3 +122,56 @@ exports.getCurrentUser = async (req, res, next) => {
     next(err);
   }
 };
+
+// Update Profile
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const { fullName, phone, gender, age, address } = req.body;
+
+        user.fullName = fullName || user.fullName;
+        user.phone = phone || user.phone;
+        user.gender = gender || user.gender;
+        user.age = age || user.age;
+        user.address = address || user.address;
+
+        const updatedUser = await user.save();
+
+        res.json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: formatUser(updatedUser)
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+// Change Password
+exports.changePassword = async (req, res, next) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findById(req.user.id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        const matched = await bcrypt.compare(currentPassword, user.password);
+        if (!matched) {
+            return res.status(401).json({ success: false, message: 'Incorrect current password' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        res.json({ success: true, message: 'Password changed successfully' });
+    } catch (err) {
+        next(err);
+    }
+};
