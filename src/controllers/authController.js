@@ -7,7 +7,11 @@ const formatUser = (user) => ({
   id: user._id.toString(),
   fullName: user.fullName,
   email: user.email,
-  role: user.role
+  role: user.role,
+  phone: user.phone,
+  gender: user.gender,
+  age: user.age,
+  address: user.address
 });
 
 // Register Patient
