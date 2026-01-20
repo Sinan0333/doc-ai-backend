@@ -181,3 +181,40 @@ exports.getReviewRequests = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.submitReview = async (req, res, next) => {
+  try {
+    const { reportId } = req.params;
+    const { notes } = req.body;
+    const doctorId = req.user._id;
+
+    // Find the report and verify it's assigned to this doctor
+    const report = await Report.findOne({
+      _id: reportId,
+      'doctorReview.doctorId': doctorId,
+      'doctorReview.status': 'requested'
+    });
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found or already reviewed'
+      });
+    }
+
+    // Update the review
+    report.doctorReview.status = 'reviewed';
+    report.doctorReview.reviewedDate = new Date();
+    report.doctorReview.notes = notes;
+
+    await report.save();
+
+    res.json({
+      success: true,
+      message: 'Review submitted successfully',
+      data: report
+    });
+  } catch (err) {
+    next(err);
+  }
+};
