@@ -72,6 +72,9 @@ tmp/
 temp/
 *.tmp
 
+# Uploads
+uploads/
+
 # MongoDB
 *.db
 *.sqlite
