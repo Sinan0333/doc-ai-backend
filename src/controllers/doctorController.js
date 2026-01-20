@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Report = require('../models/Report');
 
 // Doctor protected routes - placeholder data for MVP
 exports.getPatients = async (req, res, next) => {
@@ -60,6 +61,121 @@ exports.getDoctorDashboard = async (req, res, next) => {
         role: req.user.role
       },
       dashboard 
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getPatientHistory = async (req, res, next) => {
+  try {
+    const { patientId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    const { reportType, startDate, endDate, search } = req.query;
+
+    // First, verify the patient exists
+    const patient = await User.findOne({ _id: patientId, role: 'patient' })
+      .select('fullName email phone gender age address createdAt');
+    
+    if (!patient) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Patient not found' 
+      });
+    }
+
+    // Build query for reports
+    const query = { patientId };
+
+    if (reportType && reportType !== 'all') {
+      query.reportType = reportType;
+    }
+
+    if (startDate || endDate) {
+      query.reportDate = {};
+      if (startDate) query.reportDate.$gte = new Date(startDate);
+      if (endDate) query.reportDate.$lte = new Date(endDate);
+    }
+
+    if (search) {
+      query.reportName = { $regex: search, $options: 'i' };
+    }
+
+    // Fetch reports
+    const reports = await Report.find(query)
+      .sort({ reportDate: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-extractedText') // Exclude heavy text field
+      .populate('doctorReview.doctorId', 'fullName email');
+
+    const total = await Report.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: {
+        patient,
+        reports
+      },
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.getReviewRequests = async (req, res, next) => {
+  try {
+    const doctorId = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    
+    const { reportType, startDate, endDate } = req.query;
+
+    // Build query for review requests
+    const query = {
+      'doctorReview.status': 'requested',
+      'doctorReview.doctorId': doctorId
+    };
+
+    if (reportType && reportType !== 'all') {
+      query.reportType = reportType;
+    }
+
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+
+    // Fetch review requests
+    const requests = await Report.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select('-extractedText') // Exclude heavy text field
+      .populate('patientId', 'fullName email phone age gender');
+
+    const total = await Report.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: requests,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
     });
   } catch (err) {
     next(err);
