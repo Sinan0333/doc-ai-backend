@@ -42,15 +42,103 @@ exports.getPatients = async (req, res, next) => {
 };
 exports.getDoctorDashboard = async (req, res, next) => {
   try {
+    const doctorId = req.user._id;
+
+    // 1. Get Total Patients (All patients in system)
+    const totalPatients = await User.countDocuments({ role: 'patient' });
+
+    // 2. Get Pending Reports (Specific to this doctor)
+    const pendingReports = await Report.countDocuments({
+      'doctorReview.doctorId': doctorId,
+      'doctorReview.status': 'requested'
+    });
+
+    // 3. Get Abnormal Cases (Specific to this doctor)
+    const abnormalCases = await Report.countDocuments({
+      'doctorReview.doctorId': doctorId,
+      isAbnormal: true
+    });
+
+    // 4. Get Recent Patients (Last 5 with reports assigned to this doctor)
+    const recentReports = await Report.find({
+      'doctorReview.doctorId': doctorId
+    })
+    .sort({ updatedAt: -1 })
+    .limit(5)
+    .populate('patientId', 'fullName');
+
+    const recentPatients = recentReports.map(report => ({
+      id: report.patientId._id,
+      name: report.patientId.fullName,
+      lastReport: report.reportDate.toISOString().split('T')[0]
+    }));
+
+    // 5. Monthly Stats for Patient Visits Trend (Last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+
+    const monthlyStats = await Report.aggregate([
+      {
+        $match: {
+          'doctorReview.doctorId': doctorId,
+          createdAt: { $gte: sixMonthsAgo }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } }
+    ]);
+
+    // 6. Diagnostic Distribution
+    const diagnosticStats = await Report.aggregate([
+      {
+        $match: {
+          'doctorReview.doctorId': doctorId
+        }
+      },
+      {
+        $group: {
+          _id: "$reportType",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // 7. Get Priority Alerts (Abnormal cases awaiting review)
+    const priorityAlerts = await Report.find({
+      'doctorReview.doctorId': doctorId,
+      'doctorReview.status': 'requested',
+      isAbnormal: true
+    })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .populate('patientId', 'fullName');
+
+    const formattedAlerts = priorityAlerts.map(alert => ({
+      id: alert._id,
+      patient: alert.patientId.fullName,
+      message: `Abnormal ${alert.reportType} detected`,
+      severity: 'high'
+    }));
+
     const dashboard = {
-      totalPatients: 243,
-      pendingReports: 7,
-      abnormalCases: 14,
-      recentPatients: [
-        { id: 'p1', name: 'Arjun Kumar', lastReport: '2025-10-28' },
-        { id: 'p2', name: 'Meera Nair', lastReport: '2025-10-27' }
-      ]
+      totalPatients,
+      pendingReports,
+      abnormalCases,
+      recentPatients,
+      monthlyStats,
+      diagnosticStats,
+      priorityAlerts: formattedAlerts
     };
+
     res.json({ 
       success: true,
       message: 'Dashboard data retrieved successfully',

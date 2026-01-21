@@ -49,6 +49,10 @@ const reportSchema = new mongoose.Schema({
         notes: {
             type: String
         }
+    },
+    isAbnormal: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

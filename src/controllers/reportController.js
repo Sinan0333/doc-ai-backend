@@ -25,7 +25,8 @@ exports.uploadReport = async (req, res) => {
             reportDate,
             filePath,
             extractedText: rawText,
-            analyzedData
+            analyzedData,
+            isAbnormal: analyzedData.redFlags && analyzedData.redFlags.length > 0
         });
 
         await newReport.save();
