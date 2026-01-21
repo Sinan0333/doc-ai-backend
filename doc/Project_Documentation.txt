@@ -1,0 +1,420 @@
+================================================================================
+                    PROJECT DOCUMENTATION: DOC-AI
+           INTELLIGENT MEDICAL REPORT ANALYSIS AND MANAGEMENT SYSTEM
+================================================================================
+
+--------------------------------------------------------------------------------
+CHAPTER ONE: INTRODUCTION
+--------------------------------------------------------------------------------
+
+1.1 INTRODUCTION
+Doc-AI is a cutting-edge healthcare platform designed to bridge the communication 
+gap between complex medical diagnostic data and the people who need to 
+understand it most. In the modern healthcare landscape, patients often receive 
+detailed laboratory reports and imaging results that contain highly technical 
+jargon and numerical data that can be overwhelming and difficult to interpret 
+without immediate professional guidance. Doc-AI leverages the power of Large 
+Language Models (LLMs) to provide an interface that simplifies these reports, 
+highlights critical findings, and manages the lifecycle of medical documentation 
+for both patients and healthcare providers.
+
+1.2 OVERVIEW OF THE PROJECT
+The project consists of a full-stack web application built on the MERN 
+(MongoDB, Express.js, React, Node.js) stack, enhanced with AI capabilities 
+through Google Gemini and OpenAI integrations. 
+- Patients can upload PDF-based medical reports (blood tests, X-rays, etc.).
+- The system automatically extracts text from these documents.
+- An AI engine parses the raw text into structured data, identifying specific 
+  health parameters, historical trends, and potential "red flags."
+- Doctors have a dedicated interface to review their patients' history, view AI 
+  summaries alongside original documents, and provide expert clinical notes.
+
+1.3 THE PURPOSE OF THE WEBSITE
+The website serves as the primary visual interface for the Doc-AI system. Its 
+purpose is to provide a responsive, accessible, and user-friendly environment 
+where healthcare data can be presented clearly. 
+- For Patients: It acts as a personal health vault where they can see their 
+  health metrics visualized over time.
+- For Doctors: It acts as a clinical decision support tool that reduces the 
+  manual cognitive load of reading through pages of raw data by providing 
+  concise, high-accuracy summaries.
+
+1.4 THE PURPOSE OF THE APP
+The software application (the "app") is designed to be a high-performance 
+processing engine. Its core purpose is data transformation—taking unstructured, 
+static PDF files and converting them into dynamic, searchable, and analyzable 
+database entries. It ensures that medical data is no longer "locked" inside 
+paper or static digital files but is instead alive and useful for long-term 
+health tracking.
+
+1.5 SCOPE
+The scope of this project includes:
+- Secure User Authentication and Authorization for Patients and Doctors.
+- Robust PDF File Handling and Text Extraction.
+- Integration of Advanced AI Models (Gemini Flash/GPT-3.5) for medical analysis.
+- Dashboard-style visualization of health parameters.
+- A request-based review system for Doctor-Patient interaction.
+- Profile management and historical data tracking.
+The project is focused on diagnostic report management and does not include 
+real-time monitoring or direct pharmacy integration in its current phase.
+
+--------------------------------------------------------------------------------
+CHAPTER TWO: SYSTEM DESIGN
+--------------------------------------------------------------------------------
+
+2.1 INTRODUCTION
+System design for Doc-AI involves architecting a secure, scalable, and 
+interoperable platform. The design focuses on the separation of concerns, 
+ensuring that the frontend, backend, and AI processing layers can operate 
+independently yet communicate seamlessly through well-defined APIs.
+
+2.2 SYSTEM REQUIREMENT
+The system requires a stable environment for processing high-volume text and 
+hosting a dynamic web interface. It must handle concurrent user sessions, 
+asynchronous file uploads, and external API calls with minimal latency.
+
+2.3 SOFTWARE AND HARDWARE REQUIREMENT
+
+2.3.1 SOFTWARE REQUIREMENT
+- Frontend Framework: React.js with TypeScript and Vite.
+- Styling: Tailwind CSS and Shadcn UI components.
+- State Management: React Context API and TanStack Query.
+- Backend Environment: Node.js (v18+) with Express.js.
+- Database: MongoDB Atlas (NoSQL).
+- AI Services: OpenAI API and Google Generative AI (Gemini) SDK.
+- File Processing: pdf-parse and Multer.
+- Authentication: JSON Web Tokens (JWT) and Bcryptjs for hashing.
+
+2.3.2 HARDWARE REQUIREMENT
+- Client Side: Any modern smartphone, tablet, or PC with a web browser.
+- Server Side (Development): Minimum 8GB RAM, Quad-core Processor.
+- Server Side (Deployment): Cloud hosting (e.g., AWS, Vercel, Heroku) with 
+  at least 1GB of dedicated RAM.
+
+2.4 BACKGROUND STUDY
+The research for Doc-AI involved studying the current bottlenecks in laboratory 
+reporting. Most laboratories provide results via email or physical printouts. 
+Patients often Google their results, leading to misinformation and unnecessary 
+anxiety. Doctors, on the other hand, spend a significant portion of their 
+consultation time just reading through these reports. Doc-AI was conceived to 
+standardize this experience through AI-driven automation.
+
+2.5 PROBLEM IDENTIFICATION
+
+2.5.1 EXISTING SYSTEM
+In the existing manual system:
+- Paper records are easily lost or damaged.
+- Digital PDFs are not searchable or trendable.
+- Patients lack the expertise to identify critical abnormal values instantly.
+- Manual data entry by doctors into Electronic Health Records (EHR) is 
+  error-prone and time-consuming.
+
+2.6 PROPOSED SYSTEM
+The proposed Doc-AI system automates the diagnostic workflow:
+1. Extraction: Automatic OCR/Text extraction from uploaded PDFs.
+2. Analysis: AI-powered parameter identification and red-flag detection.
+3. Visualization: Interactive charts showing health progress.
+4. Professional Review: Collaborative platform for doctors to verify AI 
+   findings and suggest treatment.
+
+2.7 MODULE DESCRIPTION
+
+2.7.1 PATIENT MODULE
+- Registration & Profile: Capture demographic and contact info.
+- Report Upload: Seamless interface to submit new lab results.
+- Health Dashboard: Summary of findings like blood glucose, cholesterol, etc.
+- History: A timeline of all past health events.
+- Profile Management: Ability to update personal details and passwords.
+
+2.7.2 DOCTOR MODULE
+- Doctor Dashboard: View statistics on pending reviews and total patients.
+- Patient Management: List of all patients under care with search functionality.
+- Review Request Queue: Priority list of reports requiring medical attention.
+- Clinical Review: Interface to view patient history and add clinical notes.
+
+2.8 FEASIBILITY STUDY
+
+2.8.1 OPERATIONAL FEASIBILITY
+The system is operationally feasible as it improves the workflow for both 
+parties. Doctors save time, and patients receive better service. The interface 
+is designed for high usability, requiring minimal training.
+
+2.8.2 ECONOMIC FEASIBILITY
+The use of open-source tools (Node, React, MongoDB) minimizes initial costs. 
+While AI API calls incur costs, the value provided in terms of saved time and 
+improved health outcomes justifies the expenditure.
+
+2.8.3 TECHNICAL FEASIBILITY
+Current advancements in LLMs like Gemini-1.5-Flash make medical text parsing 
+highly accurate. The technical stack is mature and well-supported by the 
+developer community.
+
+2.8.4 BEHAVIOURAL FEASIBILITY
+Patients are increasingly looking for digital solutions for health management. 
+Doctors are seeking tools to manage their workload. The system aligns with 
+evolving user behaviors in digital health.
+
+2.8.5 SOCIAL FEASIBILITY
+Doc-AI promotes health literacy and empowers individuals. It respects privacy 
+and aims to democratize medical knowledge responsibly.
+
+--------------------------------------------------------------------------------
+CHAPTER THREE: SYSTEM DESIGN AND DEVELOPMENT
+--------------------------------------------------------------------------------
+
+3.1 INTRODUCTION
+This phase involves the technical blueprinting of the system. We define how 
+data flows, how the database is structured, and the criteria for code 
+organization.
+
+3.2 MODULARITY CRITERIA
+Doc-AI follows a highly modular architecture:
+- High Cohesion: Each controller (Auth, Report, Patient, Doctor) handles 
+  one specific domain.
+- Low Coupling: Services are decoupled from controllers, allowing the AI logic 
+  to be swapped without changing the API endpoints.
+
+3.3 ABOUT THE TOOLS
+
+3.3.1 DATABASE
+MongoDB is used as the primary database. As a document-oriented database, it is 
+ideal for storing "analyzedData" which can vary significantly depending on the 
+type of medical report (e.g., a blood test has different fields than a biopsy).
+
+3.3.2 NODE.JS & EXPRESS
+These provide a fast, non-blocking environment. Express middleware is used 
+extensively for authentication (JWT), error handling, and file parsing.
+
+3.4 DATA FLOW DIAGRAM (DFD)
+
+3.4.1 PHYSICAL DFD
+
+   [PATIENT] ----(Upload PDF)----> [BACKEND SERVER] <---(API Request)-- [DOCTOR]
+                                       |      ^
+      (Store File)                     |      | (JSON Response)
+          |                            v      |
+          v                    [AI SERVICE (GEMINI/GPT)]
+    [STORAGE SYSTEM]                   |      ^
+                                       |      |
+                                 (Read/Write) |
+                                       v      |
+                                 [MONGODB DATABASE]
+
+3.4.2 BASIC SYMBOLS
+- Squares: External entities (User roles).
+- Arrows: Data flow direction.
+- Rectangles (Open-sided): Data stores (DB/Files).
+- Circles/Bubbles: Processes (Backend logic).
+
+3.5 ER DIAGRAM (ASCII representation)
+
+   +-------------+          +--------------+          +----------------+
+   |    USER     | 1      * |    REPORT    | 1      1 | DOCTOR_REVIEW  |
+   +-------------+----------+--------------+----------+----------------+
+   | - id (PK)   |          | - id (PK)    |          | - status       |
+   | - fullName  |          | - patientId  |          | - doctorId(FK) |
+   | - email     |          | - reportName |          | - notes        |
+   | - password  |          | - analyzedData|         | - date         |
+   | - role      |          | - filePath   |          +----------------+
+   +-------------+          +--------------+
+
+3.6 INPUT DESIGN
+Inputs are designed for data integrity:
+- Multi-part form data for PDF uploads.
+- Structured login/registration forms with real-time validation.
+- Date pickers for medical history accuracy.
+
+3.7 OUTPUT DESIGN
+Outputs focus on readability:
+- JSON API responses for frontend consumption.
+- Visual charts (parameter trends).
+- Formatted clinical notes for doctors.
+- Status badges (Pending, Reviewed, Critical).
+
+3.8 FILE DESIGN
+Files are stored with unique timestamps to prevent name collisions. The 
+backend maintains a reference path in the database, while the physical files 
+reside in a protected `/uploads` directory.
+
+3.9 CODE DESIGN
+The project uses the 'Controller-Service-Model' pattern.
+- Models: Define Mongoose schemas.
+- Controllers: Handle req/res lifecycle and routing.
+- Services: Contain complex business logic (e.g., aiService.js).
+- Middleware: Handles cross-cutting concerns like Auth and File Uploads.
+
+3.10 DATABASE DESIGN
+The database is designed for fast retrieval of patient history. Indices are 
+applied to `email` and `patientId` fields to optimize query performance as the 
+dataset grows.
+
+3.11 NORMALISATION
+
+3.11.1 FIRST NORMAL FORM (1NF)
+Atomic values are ensured. The `analyzedData` field stores nested structured 
+JSON, but each report entry is unique and non-repeating within the list of 
+reports.
+
+3.11.2 SECOND NORMAL FORM (2NF)
+All non-prime attributes are fully functionally dependent on the primary key. 
+For example, the doctor's review notes depend on the specific Report ID, not 
+just the patient.
+
+--------------------------------------------------------------------------------
+CHAPTER FOUR: SYSTEM TESTING AND DEVELOPMENT
+--------------------------------------------------------------------------------
+
+4.1 INTRODUCTION
+Testing is critical in healthcare to ensure that the AI interpretation is 
+faithful to the source document and that user data remains private.
+
+4.2 PREPARATION OF TESTING DATA
+We used a diverse set of synthetic medical reports including:
+- CBC (Complete Blood Count) reports.
+- Lipid profiles.
+- Blood Sugar test results.
+- Radiology text summaries.
+This ensures the AI prompt is robust enough to handle various formatting styles.
+
+4.3 TESTING METHODS
+
+4.3.1 UNIT TESTING
+Testing individual functions like `extractTextFromPDF` to ensure they handle 
+corrupted PDFs gracefully, and `generateToken` to verify valid JWT structure.
+
+4.3.2 SYSTEM TESTING
+Validating the end-to-end flow: Patient registers -> Login -> Upload Report -> 
+AI parses -> Doctor reviews -> Patient sees feedback.
+
+4.3.3 VALIDATION TESTING
+Comparing AI extracted "Parameters" against manual checks to ensure 95%+ 
+accuracy in value extraction and unit identification (e.g., mg/dL vs mmol/L).
+
+4.4 IMPLEMENTATION
+The implementation was performed in phases:
+- Phase 1: Authentication and Base UI.
+- Phase 2: File Handling and Text Extraction.
+- Phase 3: AI Service Integration.
+- Phase 4: Doctor-Patient Review Workflow.
+
+4.5 IMPLEMENTATION METHOD
+A 'Top-Down' approach was used where the UI was structured first, followed by 
+the backend endpoints and finally the complex AI integration.
+
+4.6 DOCUMENTATION
+
+4.6.1 COMMENTS
+Every major function in the backend (controllers/services) includes JSDoc 
+comments explaining its purpose and parameters.
+
+4.6.2 SYSTEM MANUALS
+The README file provides instructions for setting up the environment, including 
+installing dependencies with `npm install` and setting up `.env` files.
+
+4.6.3 OPERATION MANUAL
+Guide for users:
+- Access the site.
+- Create an account.
+- Go to 'Upload' to submit a report.
+- Monitor 'Dashboard' for AI analysis.
+
+--------------------------------------------------------------------------------
+CHAPTER FIVE: SYSTEM SECURITY
+--------------------------------------------------------------------------------
+
+5.1 INTRODUCTION
+Security ensures the confidentiality, integrity, and availability of medical data.
+
+5.2 CHECK AND CONTROLS
+- Request Rate Limiting: Prevent brute force on login.
+- File Mime-type Checks: Ensure only PDF files are uploaded.
+- CORS Policy: Restricting backend access to the trusted frontend domain.
+
+5.2.1 DATA ENTRY GUIDELINES
+- All inputs are sanitized using `express-validator`.
+- PDF uploads are limited to 5MB to prevent storage exhaustion.
+
+5.3 DATA SECURITY
+- Passwords are salted and hashed using Bcrypt.
+- All database communication occurs over encrypted channels.
+- Environment variables (API Keys) are never committed to version control.
+
+5.4 USER SECURITY
+
+5.4.1 AUTHENTICATION
+JWT-based authentication ensures that once a user logs in, their identity is 
+stored in an encrypted token, preventing session hijacking.
+
+5.4.2 AUTHORISATION
+Role-Based Access Control (RBAC):
+- `patient` routes are blocked for doctors.
+- `doctor` routes (like viewing all patients) are strictly blocked for patients.
+
+--------------------------------------------------------------------------------
+CHAPTER SIX: POST IMPLEMENTATION
+--------------------------------------------------------------------------------
+
+6.1 INTRODUCTION
+After the system goes live, it must be monitored for performance and accuracy.
+
+6.1.1 POST IMPLEMENTATION REVIEW
+A review of the system shows that the AI-as-a-service model provides 
+unprecedented speed in medical data digitization. User feedback indicates high 
+satisfaction with the "Red Flag" notification feature.
+
+6.2 SYSTEM EVALUATION
+The system is evaluated based on:
+- Accuracy: Are the parameters extracted correctly?
+- Performance: Does the page load in under 2 seconds?
+- Reliability: Is the AI service available 99.9% of the time?
+
+6.3 MAINTENANCE
+Maintenance ensures the system stays current with new medical standards and 
+software patches.
+
+6.3.1 ACTIVITIES OF A MAINTENANCE PROCEDURE
+- Routine database indexing.
+- Reviewing AI prompt performance.
+- Updating dependencies to patch security vulnerabilities.
+- Pruning old or temporary upload files.
+
+--------------------------------------------------------------------------------
+CHAPTER SEVEN: CONCLUSION
+--------------------------------------------------------------------------------
+
+Doc-AI successfully demonstrates how Artificial Intelligence can be 
+meaningfully integrated into healthcare to empower users. By moving from 
+static paper-based reporting to a dynamic, AI-enabled digital platform, we 
+provide a tool that saves lives through early "red flag" detection and saves 
+time for busy medical professionals. The project meets all its primary 
+objectives and serves as a robust prototype for future digital health 
+innovations.
+
+--------------------------------------------------------------------------------
+CHAPTER EIGHT: FUTURE ENHANCEMENT, BIBLIOGRAPHY, AND ANNEXURE
+--------------------------------------------------------------------------------
+
+8.1 FUTURE ENHANCEMENT
+- Predictive Analytics: Using historical data to predict future health risks.
+- Integration: Direct connection to Electronic Health Record (EHR) systems.
+- Voice Interaction: Allowing patients to "ask" the AI questions about their 
+  report verbally.
+- Wearable Sync: Integrating data from smartwatches (Heart rate, Sleep) into 
+  the main dashboard.
+
+8.2 BIBLIOGRAPHY
+- "Designing Data-Intensive Applications" by Martin Kleppmann.
+- MongoDB Atlas Documentation (docs.mongodb.com).
+- React and Vite Development Guides.
+- OpenAI and Google Generative AI API Documentation.
+- HIPAA Compliance Guidelines for Digital Health.
+
+8.3 ANNEXURE
+- Sample AI Prompt Structure.
+- JSON structure for Analyzed Reports.
+- UI Component Hierarchy Chart.
+- Database Schema Drafts.
+
+================================================================================
+                                END OF DOCUMENT
+================================================================================
