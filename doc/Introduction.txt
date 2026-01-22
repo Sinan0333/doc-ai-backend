@@ -1,0 +1,18 @@
+================================================================================
+                    STAGE PRESENTATION INTRODUCTION: DOC-AI
+================================================================================
+
+[THE PROBLEM]
+Medical reports are confusing. The technical words and numbers leave patients 
+worried and doctors overwhelmed. 
+
+[THE SOLUTION]
+Doc-AI solves this. Just upload your report, and our AI explains it in simple 
+words. You can track your health on easy charts and request a doctor's review 
+with one click—all in one place.
+
+[THE INTRODUCTION]
+I’m proud to present **Doc-AI**: Making health data simple for everyone.
+
+Thank you.
+================================================================================
