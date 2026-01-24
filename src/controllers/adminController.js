@@ -137,3 +137,48 @@ exports.addDoctor = async (req, res, next) => {
     next(err);
   }
 };
+
+// Get Doctor Activity (Reports handled by doctor)
+exports.getDoctorActivity = async (req, res, next) => {
+  try {
+    const { doctorId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Verify doctor exists
+    const doctor = await User.findOne({ _id: doctorId, role: 'doctor' }).select('fullName email');
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: 'Doctor not found'
+      });
+    }
+
+    const query = { 'doctorReview.doctorId': doctorId };
+
+    const reports = await Report.find(query)
+      .populate('patientId', 'fullName email')
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Report.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: {
+        doctor,
+        reports
+      },
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};

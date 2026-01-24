@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAdminDashboard, getDoctors, addDoctor } = require('../controllers/adminController');
+const { getAdminDashboard, getDoctors, addDoctor, getDoctorActivity } = require('../controllers/adminController');
 const authMiddleware = require('../middleware/authMiddleware');
 const roleMiddleware = require('../middleware/roleMiddleware');
 
@@ -12,5 +12,6 @@ router.use(roleMiddleware('admin'));
 router.get('/dashboard', getAdminDashboard);
 router.get('/doctors', getDoctors);
 router.post('/doctors', addDoctor);
+router.get('/doctors/:doctorId/activity', getDoctorActivity);
 
 module.exports = router;
