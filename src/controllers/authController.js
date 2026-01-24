@@ -113,6 +113,38 @@ exports.loginDoctor = async (req, res, next) => {
   }
 };
 
+// Admin login
+exports.loginAdmin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || user.role !== 'admin') {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid credentials' 
+      });
+    }
+
+    const matched = await bcrypt.compare(password, user.password);
+    if (!matched) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Invalid credentials' 
+      });
+    }
+
+    const token = generateToken({ id: user._id, role: user.role });
+    res.json({ 
+      success: true,
+      message: 'Login successful',
+      user: formatUser(user), 
+      token 
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // Get current user (for session restore)
 exports.getCurrentUser = async (req, res, next) => {
   try {

@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerPatient, loginPatient, loginDoctor, getCurrentUser, updateProfile, changePassword } = require('../controllers/authController');
+const { registerPatient, loginPatient, loginDoctor, loginAdmin, getCurrentUser, updateProfile, changePassword } = require('../controllers/authController');
 const { registerPatientValidator, loginValidator } = require('../validators/authValidators');
 const { handleValidationErrors } = require('../middleware/errorMiddleware');
 const authMiddleware = require('../middleware/authMiddleware');
@@ -14,6 +14,9 @@ router.post('/patient-login', loginValidator, handleValidationErrors, loginPatie
 
 // POST /api/auth/doctor-login
 router.post('/doctor-login', loginValidator, handleValidationErrors, loginDoctor);
+
+// POST /api/auth/admin-login
+router.post('/admin-login', loginValidator, handleValidationErrors, loginAdmin);
 
 // GET /api/auth/me - Get current user
 // GET /api/auth/me - Get current user
