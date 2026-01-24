@@ -222,3 +222,50 @@ exports.getPatients = async (req, res, next) => {
     next(err);
   }
 };
+
+// Get Patient History for Admin
+exports.getAdminPatientHistory = async (req, res, next) => {
+  try {
+    const { patientId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Verify patient exists
+    const patient = await User.findOne({ _id: patientId, role: 'patient' })
+      .select('fullName email phone gender age address');
+    
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: 'Patient not found'
+      });
+    }
+
+    const query = { patientId };
+
+    const reports = await Report.find(query)
+      .sort({ reportDate: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('doctorReview.doctorId', 'fullName email');
+
+    const total = await Report.countDocuments(query);
+
+    res.json({
+      success: true,
+      data: {
+        patient,
+        reports
+      },
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
