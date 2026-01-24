@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Report = require('../models/Report');
+const bcrypt = require('bcryptjs');
 
 // Get Admin Dashboard Stats
 exports.getAdminDashboard = async (req, res, next) => {
@@ -87,6 +88,49 @@ exports.getDoctors = async (req, res, next) => {
         limit,
         total,
         pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Add New Doctor
+exports.addDoctor = async (req, res, next) => {
+  try {
+    const { fullName, email, password, phone, gender } = req.body;
+
+    // Check if email already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered'
+      });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create doctor
+    const doctor = await User.create({
+      fullName,
+      email,
+      password: hashedPassword,
+      role: 'doctor',
+      phone,
+      gender
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Doctor added successfully',
+      data: {
+        id: doctor._id,
+        fullName: doctor.fullName,
+        email: doctor.email,
+        role: doctor.role
       }
     });
   } catch (err) {
