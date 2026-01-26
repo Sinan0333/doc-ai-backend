@@ -138,20 +138,36 @@ const compareMedicalReports = async (report1, report2) => {
         - Parameters: ${JSON.stringify(report2.analyzedData.parameters)}
         - Doctor Notes: ${report2.doctorReview?.notes || 'No notes available'}
         
-        Provide a detailed comparative analysis. Address the following:
-        1. Key improvements or deteriorations in health parameters.
-        2. Status of previously identified red flags.
-        3. A combined summary focusing on trends.
-        4. General recommendations (non-diagnostic).
+        Provide a detailed comparative analysis. Return ONLY a valid JSON object. Do not include markdown formatting like \`\`\`json.
         
-        Format your response clearly with headings.
+        Structure the JSON as follows:
+        {
+            "summary": "Overall comparison summary focusing on trends",
+            "parameterChanges": [
+                { 
+                    "name": "Parameter Name", 
+                    "prevValue": "Value from Report 1", 
+                    "newValue": "Value from Report 2", 
+                    "unit": "Unit", 
+                    "changeType": "improvement | deterioration | stable | new", 
+                    "insight": "Brief explanation of what this change means" 
+                }
+            ],
+            "redFlagsStatus": {
+                "resolved": ["Red flags from Report 1 no longer present"],
+                "persisting": ["Red flags present in both reports"],
+                "new": ["New red flags identified in Report 2"]
+            },
+            "recommendations": ["Actionable advice for the patient"]
+        }
     `;
 
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        return response.text();
+        const text = response.text();
+        return JSON.parse(text.replace(/```json/g, '').replace(/```/g, '').trim());
     } catch (error) {
         console.error("Comparison Error:", error);
         throw new Error("Failed to compare medical reports with AI.");
