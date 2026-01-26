@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../middleware/uploadMiddleware');
-const { uploadReport, getReportHistory, getReportById, downloadReport, requestReview } = require('../controllers/reportController');
+const { uploadReport, getReportHistory, getReportById, downloadReport, requestReview, compareReports } = require('../controllers/reportController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 // POST /api/report/upload
@@ -11,6 +11,9 @@ router.post('/upload', authMiddleware, upload.single('report'), uploadReport);
 
 // GET /api/report/history
 router.get('/history', authMiddleware, getReportHistory);
+
+// POST /api/report/compare
+router.post('/compare', authMiddleware, compareReports);
 
 // GET /api/report/:id
 router.get('/:id', authMiddleware, getReportById);

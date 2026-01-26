@@ -1,4 +1,4 @@
-const { extractTextFromPDF, parseMedicalData, deleteFile } = require('../services/aiService');
+const { extractTextFromPDF, parseMedicalData, compareMedicalReports, deleteFile } = require('../services/aiService');
 const Report = require('../models/Report'); // We will create this model next
 
 exports.uploadReport = async (req, res) => {
@@ -148,5 +148,46 @@ exports.requestReview = async (req, res) => {
     } catch (error) {
         console.error("Request Review Error:", error);
         res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+exports.compareReports = async (req, res) => {
+    try {
+        const { reportId1, reportId2 } = req.body;
+
+        if (!reportId1 || !reportId2) {
+            return res.status(400).json({ message: "Two report IDs are required for comparison" });
+        }
+
+        const report1 = await Report.findOne({ _id: reportId1, patientId: req.user.id })
+            .populate('doctorReview.doctorId', 'fullName email');
+        const report2 = await Report.findOne({ _id: reportId2, patientId: req.user.id })
+            .populate('doctorReview.doctorId', 'fullName email');
+
+        if (!report1 || !report2) {
+            return res.status(404).json({ message: "One or both reports not found" });
+        }
+
+        const comparison = await compareMedicalReports(report1, report2);
+
+        res.json({
+            success: true,
+            data: {
+                report1: {
+                    id: report1._id,
+                    name: report1.reportName,
+                    date: report1.reportDate
+                },
+                report2: {
+                    id: report2._id,
+                    name: report2.reportName,
+                    date: report2.reportDate
+                },
+                comparison: comparison
+            }
+        });
+    } catch (error) {
+        console.error("Comparison Controller Error:", error);
+        res.status(500).json({ message: "Server Error during comparison", error: error.message });
     }
 };

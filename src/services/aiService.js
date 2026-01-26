@@ -115,10 +115,54 @@ const parseMedicalData = async (rawText) => {
     }
 };
 
+/**
+ * Compare two medical reports using AI
+ */
+const compareMedicalReports = async (report1, report2) => {
+    const prompt = `
+        You are a senior medical consultant. Compare the following two analyzed medical reports for the same patient.
+        
+        Report 1:
+        - Date: ${report1.reportDate}
+        - Type: ${report1.reportType}
+        - Summary: ${report1.analyzedData.summary}
+        - Red Flags: ${JSON.stringify(report1.analyzedData.redFlags)}
+        - Parameters: ${JSON.stringify(report1.analyzedData.parameters)}
+        - Doctor Notes: ${report1.doctorReview?.notes || 'No notes available'}
+        
+        Report 2:
+        - Date: ${report2.reportDate}
+        - Type: ${report2.reportType}
+        - Summary: ${report2.analyzedData.summary}
+        - Red Flags: ${JSON.stringify(report2.analyzedData.redFlags)}
+        - Parameters: ${JSON.stringify(report2.analyzedData.parameters)}
+        - Doctor Notes: ${report2.doctorReview?.notes || 'No notes available'}
+        
+        Provide a detailed comparative analysis. Address the following:
+        1. Key improvements or deteriorations in health parameters.
+        2. Status of previously identified red flags.
+        3. A combined summary focusing on trends.
+        4. General recommendations (non-diagnostic).
+        
+        Format your response clearly with headings.
+    `;
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text();
+    } catch (error) {
+        console.error("Comparison Error:", error);
+        throw new Error("Failed to compare medical reports with AI.");
+    }
+};
+
 module.exports = {
     extractTextFromPDF,
     parseMedicalData,
     parseMedicalDataOpenAI, // Exported for manual usage if needed
     parseMedicalDataGemini,
+    compareMedicalReports,
     deleteFile
 };
