@@ -85,7 +85,7 @@ exports.getPatientDashboard = async (req, res, next) => {
 
 exports.getDoctorsList = async (req, res, next) => {
     try {
-        const doctors = await User.find({ role: 'doctor' }).select('fullName email specialist');
+        const doctors = await User.find({ role: 'doctor', isDeleted: { $ne: true } }).select('fullName email specialist');
         res.json({ success: true, count: doctors.length, data: doctors });
     } catch (err) {
         next(err);

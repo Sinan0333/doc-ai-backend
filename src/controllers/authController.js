@@ -93,6 +93,13 @@ exports.loginDoctor = async (req, res, next) => {
       });
     }
 
+    if (user.isDeleted) {
+      return res.status(403).json({
+        success: false,
+        message: 'Account has been deactivated. Please contact support.'
+      });
+    }
+
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
       return res.status(401).json({ 
