@@ -5,12 +5,12 @@ const bcrypt = require('bcryptjs');
 // Get Admin Dashboard Stats
 exports.getAdminDashboard = async (req, res, next) => {
   try {
-    const totalDoctors = await User.countDocuments({ role: 'doctor' });
+    const totalDoctors = await User.countDocuments({ role: 'doctor', isDeleted: { $ne: true } });
     const totalPatients = await User.countDocuments({ role: 'patient' });
     const totalReports = await Report.countDocuments();
     
     // Get recent 5 doctors
-    const recentDoctors = await User.find({ role: 'doctor' })
+    const recentDoctors = await User.find({ role: 'doctor', isDeleted: { $ne: true } })
       .sort({ createdAt: -1 })
       .limit(5)
       .select('-password');
