@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   gender:   { type: String, enum: ['male', 'female', 'other'], default: null },
   age:      { type: Number, min: 0 },
   address:  { type: String },
+  isDeleted: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

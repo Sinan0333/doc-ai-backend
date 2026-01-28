@@ -63,7 +63,7 @@ exports.getDoctors = async (req, res, next) => {
     const skip = (page - 1) * limit;
     const search = req.query.search || '';
 
-    const query = { role: 'doctor' };
+    const query = { role: 'doctor', isDeleted: { $ne: true } };
 
     if (search) {
       query.$or = [
@@ -89,6 +89,33 @@ exports.getDoctors = async (req, res, next) => {
         total,
         pages: Math.ceil(total / limit)
       }
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Soft Delete Doctor
+exports.deleteDoctor = async (req, res, next) => {
+  try {
+    const { doctorId } = req.params;
+
+    const doctor = await User.findOneAndUpdate(
+      { _id: doctorId, role: 'doctor' },
+      { isDeleted: true },
+      { new: true }
+    );
+
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: 'Doctor not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Doctor removed successfully'
     });
   } catch (err) {
     next(err);
