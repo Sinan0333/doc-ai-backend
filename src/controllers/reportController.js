@@ -113,8 +113,16 @@ exports.getReportById = async (req, res) => {
 
 exports.downloadReport = async (req, res) => {
     try {
-        const report = await Report.findOne({ _id: req.params.id, patientId: req.user.id });
+        let query = { _id: req.params.id };
 
+        // If user is patient, limit to their own reports
+        if (req.user.role === 'patient') {
+            query.patientId = req.user.id;
+        }
+        // Doctors and Admins can access any report by ID (or add specific logic if needed)
+
+        const report = await Report.findOne(query);
+        
         if (!report) {
             return res.status(404).json({ message: "Report not found" });
         }
