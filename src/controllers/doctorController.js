@@ -4,12 +4,22 @@ const Report = require('../models/Report');
 // Doctor protected routes - placeholder data for MVP
 exports.getPatients = async (req, res, next) => {
     try {
+        const doctorId = req.user._id;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
         const search = req.query.search || '';
 
-        const query = { role: 'patient' };
+        // Find patients who have been reviewed by this doctor
+        const reviewedPatientIds = await Report.distinct('patientId', {
+            'doctorReview.doctorId': doctorId,
+            'doctorReview.status': 'reviewed'
+        });
+
+        const query = { 
+            role: 'patient',
+            _id: { $in: reviewedPatientIds }
+        };
 
         if (search) {
             query.$or = [
@@ -44,8 +54,12 @@ exports.getDoctorDashboard = async (req, res, next) => {
   try {
     const doctorId = req.user._id;
 
-    // 1. Get Total Patients (All patients in system)
-    const totalPatients = await User.countDocuments({ role: 'patient' });
+    // 1. Get Total Patients (Patients reviewed by this doctor)
+    const reviewedPatientIds = await Report.distinct('patientId', {
+      'doctorReview.doctorId': doctorId,
+      'doctorReview.status': 'reviewed'
+    });
+    const totalPatients = reviewedPatientIds.length;
 
     // 2. Get Pending Reports (Specific to this doctor)
     const pendingReports = await Report.countDocuments({
