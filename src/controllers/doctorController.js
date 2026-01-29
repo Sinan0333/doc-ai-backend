@@ -284,6 +284,24 @@ exports.getReviewRequests = async (req, res, next) => {
   }
 };
 
+exports.getPendingReviewCount = async (req, res, next) => {
+  try {
+    const doctorId = req.user._id;
+
+    const count = await Report.countDocuments({
+      'doctorReview.status': 'requested',
+      'doctorReview.doctorId': doctorId
+    });
+
+    res.json({
+      success: true,
+      count
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.submitReview = async (req, res, next) => {
   try {
     const { reportId } = req.params;
